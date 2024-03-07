@@ -1,0 +1,8 @@
+npm install -D @playwright/test
+
+npx playwright install
+
+npx playwright test
+
+# keep in mind that the server address must be correct. Initially it is http://localhost:5500
+# but in this particular case it was http://127.0.0.1:5500/07.%20Automated%20Testing/to-do-app/
