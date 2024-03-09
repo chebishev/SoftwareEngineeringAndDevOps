@@ -1,0 +1,40 @@
+# install the dependencies
+
+npm install
+
+# install playwright
+
+npm install -D @playwright/test
+
+# run the frontend
+
+npm run start
+
+# run the backend
+
+node server.js
+
+# error was thrown when running the backend
+
+Error: Cannot find module 'express'
+npm install express
+
+# now the server is up and running after going to the "server" folder
+
+node server.js
+
+# create folder "tests" and "ui.test.js" file in it
+
+npx playwright test tests/ui.test.js
+
+# expect: Error: No tests found.
+
+# when we have the first test written we can test if it is correct
+
+npx playwright test tests/ui.test.js
+
+# because of missing browsers you may see a prompt that asks you to run
+
+npx playwright install
+
+# run the test again. It should pass
