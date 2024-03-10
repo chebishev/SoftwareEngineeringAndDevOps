@@ -103,3 +103,35 @@ test("Submit the form with empty input fields", async ({ page }) => {
   await page.$('a[href="/login"]');
   expect(page.url()).toBe(url + "/login");
 });
+
+// Submit the form with empty email and valid password
+test("Submit the form with empty email and valid password", async ({
+  page,
+}) => {
+  await page.goto(url + "/login");
+  await page.fill('input[name="password"]', "123456");
+  await page.click('input[type="submit"]');
+  page.on("dialog", (dialog) => {
+    expect(dialog.type()).toContain("alert");
+    expect(dialog.message()).toContain("All fields are required");
+    dialog.accept();
+  });
+  await page.$('a[href="/login"]');
+  expect(page.url()).toBe(url + "/login");
+});
+
+// Submit the form with valid email and empty password
+test("Submit the form with valid email and empty password", async ({
+  page,
+}) => {
+  await page.goto(url + "/login");
+  await page.fill('input[name="email"]', "peter@abv.bg");
+  await page.click('input[type="submit"]');
+  page.on("dialog", (dialog) => {
+    expect(dialog.type()).toContain("alert");
+    expect(dialog.message()).toContain("All fields are required");
+    dialog.accept();
+  });
+  await page.$('a[href="/login"]');
+  expect(page.url()).toBe(url + "/login");
+});
