@@ -213,9 +213,7 @@ test("Submit the register form with empty confirm password", async ({
 });
 
 // Submit the register form with different passwords
-test("Submit the register form with different passwords", async ({
-  page,
-}) => {
+test("Submit the register form with different passwords", async ({ page }) => {
   await page.goto(url + "/register");
   await page.fill('input[name="email"]', `peter${Math.random()}@abv.bg`);
   await page.fill('input[name="password"]', "123456");
@@ -231,7 +229,7 @@ test("Submit the register form with different passwords", async ({
 });
 
 // "Add Book" page
- 
+
 // add a book with correct data
 test("Add book with correct data", async ({ page }) => {
   await page.goto(url + "/login");
@@ -244,10 +242,13 @@ test("Add book with correct data", async ({ page }) => {
   ]);
 
   await page.click('a[href="/create"]');
-  await page.waitForSelector("#create-form")
+  await page.waitForSelector("#create-form");
   await page.fill("#title", "The Lord of the Rings");
-  await page.fill("#description", "The Lord of the Rings is an epic high-fantasy novel written by English author J. R. R. Tolkien.");
-  await page.fill("#image", "https://example.com/book-image.jpg")
+  await page.fill(
+    "#description",
+    "The Lord of the Rings is an epic high-fantasy novel written by English author J. R. R. Tolkien."
+  );
+  await page.fill("#image", "https://example.com/book-image.jpg");
   await page.selectOption("#type", "Fiction");
   await page.click("#create-form input[type=submit]");
   await page.waitForURL(url + "/catalog");
@@ -266,9 +267,12 @@ test("Submit the book with empty title field", async ({ page }) => {
   ]);
 
   await page.click('a[href="/create"]');
-  await page.waitForSelector("#create-form")
-  await page.fill("#description", "The Lord of the Rings is an epic high-fantasy novel written by English author J. R. R. Tolkien.");
-  await page.fill("#image", "https://example.com/book-image.jpg")
+  await page.waitForSelector("#create-form");
+  await page.fill(
+    "#description",
+    "The Lord of the Rings is an epic high-fantasy novel written by English author J. R. R. Tolkien."
+  );
+  await page.fill("#image", "https://example.com/book-image.jpg");
   await page.selectOption("#type", "Fiction");
   await page.click("#create-form input[type=submit]");
   page.on("dialog", (dialog) => {
@@ -276,7 +280,7 @@ test("Submit the book with empty title field", async ({ page }) => {
     expect(dialog.message()).toContain("All fields are required");
     dialog.accept();
   });
-  await page.$('a[href="/create"]')
+  await page.$('a[href="/create"]');
   expect(page.url()).toBe(url + "/create");
 });
 
@@ -289,12 +293,12 @@ test("Submit the book with empty description field", async ({ page }) => {
   await Promise.all([
     page.click('input[type="submit"]'),
     page.waitForURL(url + "/catalog"),
-  ])
+  ]);
 
   await page.click('a[href="/create"]');
-  await page.waitForSelector("#create-form")
+  await page.waitForSelector("#create-form");
   await page.fill("#title", "The Lord of the Rings");
-  await page.fill("#image", "https://example.com/book-image.jpg")
+  await page.fill("#image", "https://example.com/book-image.jpg");
   await page.selectOption("#type", "Fiction");
   await page.click("#create-form input[type=submit]");
   page.on("dialog", (dialog) => {
@@ -302,7 +306,7 @@ test("Submit the book with empty description field", async ({ page }) => {
     expect(dialog.message()).toContain("All fields are required");
     dialog.accept();
   });
-  await page.$('a[href="/create"]')
+  await page.$('a[href="/create"]');
   expect(page.url()).toBe(url + "/create");
 });
 
@@ -318,9 +322,12 @@ test("Submit the book with empty image field", async ({ page }) => {
   ]);
 
   await page.click('a[href="/create"]');
-  await page.waitForSelector("#create-form")
+  await page.waitForSelector("#create-form");
   await page.fill("#title", "The Lord of the Rings");
-  await page.fill("#description", "The Lord of the Rings is an epic high-fantasy novel written by English author J. R. R. Tolkien.");
+  await page.fill(
+    "#description",
+    "The Lord of the Rings is an epic high-fantasy novel written by English author J. R. R. Tolkien."
+  );
   await page.selectOption("#type", "Fiction");
   await page.click("#create-form input[type=submit]");
   page.on("dialog", (dialog) => {
@@ -328,7 +335,7 @@ test("Submit the book with empty image field", async ({ page }) => {
     expect(dialog.message()).toContain("All fields are required");
     dialog.accept();
   });
-  await page.$('a[href="/create"]')
+  await page.$('a[href="/create"]');
   expect(page.url()).toBe(url + "/create");
 });
 
@@ -345,7 +352,7 @@ test("Verify that all books are displayed", async ({ page }) => {
     page.waitForURL(url + "/catalog"),
   ]);
 
-  await page.waitForSelector(".dashboard")
+  await page.waitForSelector(".dashboard");
   const books = await page.$$(".other-books-list li");
   expect(books.length).toBeGreaterThan(0);
 });
@@ -384,20 +391,92 @@ test("Login and navigate to Details page", async ({ page }) => {
   await page.click("a[href='/catalog']");
   await page.waitForSelector(".otherBooks");
 
-  await page.click(".otherBooks a.button")
+  await page.click(".otherBooks a.button");
   await page.waitForSelector(".book-information");
   const detailsPageTitle = await page.textContent(".book-information h3");
   expect(detailsPageTitle).toBe("The Lord of the Rings");
-})
+});
 
 // Verify that guest user sees details button and it works correctly
 test("navigate to Details page as guest", async ({ page }) => {
-  await page.goto(url + '/catalog');
+  await page.goto(url + "/catalog");
   await page.click("a[href='/catalog']");
   await page.waitForSelector(".otherBooks");
 
-  await page.click(".otherBooks a.button")
+  await page.click(".otherBooks a.button");
   await page.waitForSelector(".book-information");
   const detailsPageTitle = await page.textContent(".book-information h3");
   expect(detailsPageTitle).toBe("The Lord of the Rings");
-})
+});
+
+// Verify that all info is displayed correctly
+test("Verify that all info is displayed correctly", async ({ page }) => {
+  await page.goto(url + "/catalog");
+  await page.click("a[href='/catalog']");
+  await page.waitForSelector(".otherBooks");
+
+  await page.click(".otherBooks a.button");
+  await page.waitForSelector(".book-information");
+  const bookTitle = await page.textContent(".book-information h3");
+  expect(bookTitle).toBe("The Lord of the Rings");
+  const bookType = await page.textContent("p.type");
+  expect(bookType).toContain("Fiction");
+  const bookIMG = await page.$$eval("p.img img[src]", (img) => img[0].src);
+  expect(bookIMG).toBe("https://example.com/book-image.jpg");
+  const likesIMG = await page.$$eval(
+    "div.likes img.hearts",
+    (img) => img[0].src
+  );
+  expect(likesIMG).toContain("/images/heart.png");
+  const likesCounter = await page.textContent("div.likes span#total-likes");
+  expect(likesCounter).toContain("Likes: ");
+  const description = await page.textContent("div.book-description p");
+  expect(description).toContain(
+    "The Lord of the Rings is an epic high-fantasy novel written by English author J. R. R. Tolkien."
+  );
+});
+
+// Verify that edit and delete buttons are visible to book creator
+test("Verify that edit and delete buttons are visible to book creator", async ({
+  page,
+}) => {
+  await page.goto(url + "/login");
+  await page.fill('input[name="email"]', "peter@abv.bg");
+  await page.fill('input[name="password"]', "123456");
+
+  await Promise.all([
+    page.click('input[type="submit"]'),
+    page.waitForURL(url + "/catalog"),
+  ]);
+
+  await page.click('a[href="/create"]');
+  await page.waitForSelector("#create-form");
+  await page.fill("#title", "Outlander-test");
+  await page.fill("#description", "Just some text for testing purposes");
+  await page.fill("#image", "https://example.com/book-image.jpg");
+  await page.selectOption("#type", "Fiction");
+  await page.click("#create-form input[type=submit]");
+  await page.waitForURL(url + "/catalog");
+  expect(page.url()).toBe(url + "/catalog");
+  await page.click(".otherBooks a.button");
+  await page.waitForSelector(".book-information");
+  const buttons = await page.$$eval("div.actions a.button", (btns) =>
+    btns.map((btn) => btn.textContent)
+  );
+  expect(buttons).toEqual(["Edit", "Delete"]);
+});
+
+// Verify that edit and delete buttons are not visible to other users
+test("Verify that edit and delete buttons are not visible to other users", async ({
+  page,
+}) => {
+  await page.goto(url + "/login");
+  await page.fill('input[name="email"]', "john@abv.bg");
+  await page.fill('input[name="password"]', "123456");
+
+  await Promise.all([
+    page.click('input[type="submit"]'),
+    page.waitForURL(url + "/catalog"),
+  ]);
+  // get the last book and check if the buttons are not visible
+});
