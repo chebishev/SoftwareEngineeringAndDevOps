@@ -478,5 +478,77 @@ test("Verify that edit and delete buttons are not visible to other users", async
     page.click('input[type="submit"]'),
     page.waitForURL(url + "/catalog"),
   ]);
-  // get the last book and check if the buttons are not visible
+  await page.click(".otherBooks a.button");
+  await page.waitForSelector(".book-information");
+  const buttons = await page.$$eval("div.actions a.button", (btns) =>
+    btns.map((btn) => btn.textContent)
+  );
+  expect(buttons).toEqual(["Like"]);
+});
+
+// Verify If Like Button Is Not Visible for Creator
+
+test("Verify that Like button is not visible to book creator", async ({
+  page,
+}) => {
+  await page.goto(url + "/login");
+  await page.fill('input[name="email"]', "peter@abv.bg");
+  await page.fill('input[name="password"]', "123456");
+
+  await Promise.all([
+    page.click('input[type="submit"]'),
+    page.waitForURL(url + "/catalog"),
+  ]);
+
+  await page.click(".otherBooks a.button");
+  await page.waitForSelector(".book-information");
+  const buttons = await page.$$eval("div.actions a.button", (btns) =>
+    btns.map((btn) => btn.textContent)
+  );
+  // it must be only the Like button for non creators
+  expect(buttons.length).toBe(2);
+});
+
+// Verify If Like Button Is Visible for Non-Creator
+test("Verify that Like button is visible to other users", async ({ page }) => {
+  await page.goto(url + "/login");
+  await page.fill('input[name="email"]', "john@abv.bg");
+  await page.fill('input[name="password"]', "123456");
+
+  await Promise.all([
+    page.click('input[type="submit"]'),
+    page.waitForURL(url + "/catalog"),
+  ]);
+  await page.click(".otherBooks a.button");
+  await page.waitForSelector(".book-information");
+  const buttons = await page.$$eval("div.actions a.button", (btns) =>
+    btns.map((btn) => btn.textContent)
+  );
+  expect(buttons).toEqual(["Like"]);
+});
+
+// Logout functionality
+
+// Verify that the logout button is visible
+test("Verify that the logout button is visible", async ({ page }) => {
+  await page.goto(url + "/login");
+  await page.fill('input[name="email"]', "peter@abv.bg");
+  await page.fill('input[name="password"]', "123456");
+  await page.click('input[type="submit"]');
+  const logoutButton = await page.waitForSelector("#logoutBtn");
+  expect(logoutButton).toBeTruthy();
+});
+
+// Verify That the "Logout" Button Redirects Correctly
+test("Verify redirection of logout link after user login", async ({ page }) => {
+  await page.goto(url + "/login");
+  await page.fill('input[name="email"]', "peter@abv.bg");
+  await page.fill('input[name="password"]', "123456");
+  await page.click('input[type="submit"]');
+
+  const logoutLink = await page.$('a[href="javascript:void(0)"]');
+  await logoutLink.click();
+
+  const redirectURL = page.url();
+  expect(redirectURL).toBe(url + "/catalog");
 });
