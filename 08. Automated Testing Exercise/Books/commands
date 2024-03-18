@@ -11,3 +11,10 @@
   }
 }
 
+# create tests folder
+# navigate to it and create api.test.js
+# write the tests in it
+# and run it with:
+npx mocha api.test.js
+
+
