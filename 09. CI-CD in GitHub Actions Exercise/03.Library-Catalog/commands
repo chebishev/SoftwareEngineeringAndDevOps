@@ -1,10 +1,13 @@
 # @playwright/test to dependencies or install it with npm install -D @playwright/test
+
 npm install
 
 # start frontend
+
 npm start
 
 # start backend (in separated terminal)
+
 cd server
 node server.js
 
@@ -13,9 +16,13 @@ node server.js
 npm test
 
 # if everything is working as expected, start to create the CI/CD pipeline
+
 # npx playwright install is needed
+
 npx playwright install
 
 # run tests:
+
 npm test
 
+# don't forget to fix the backend address for the deploy. See workflow file and src/config, api, data files
