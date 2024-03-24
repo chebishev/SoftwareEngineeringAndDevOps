@@ -1,0 +1,25 @@
+# for this to run you will need:
+# Node.js
+# Jenkins (by default it works on port 8080)
+# Ngrok (to expose the port 8080 in the internet)
+# Github repo with the project
+# Webhook from the repo (for payload you will need ngrok, but by default you can use localhost:8080)
+
+# install dependencies and run the project
+npm install
+npm start
+# error will occur, because Jenkins is already running on port 8080
+# you can change it in index.js file just for run and test (to see if everything is working)
+# if you see docker files port 3030 must be exposed
+
+# for building image and uploading it to dockerhub
+# we will use chebushev/jenkins-test:alpha for testing purposes
+docker build -t chebishev/jenkins-test:alpha .
+echo "$DOCKER_PASSWORD" | docker login --username chebishev --password "Your Generated Key from DockerHub"
+docker push chebishev/jenkins-test:alpha
+
+# for running the image
+docker pull chebishev/jenkins-test:alpha
+
+# do not forget to add the image to docker-compose
+docker-compose -f docker-compose.yml up -d
