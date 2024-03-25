@@ -23,7 +23,7 @@ npm test
 
 ----------------------------------------
 # add the project to github repo
-# create new jenkins job
+# start jenkins
 
 # start ngrok
 # it needs an account so you have to sign up
