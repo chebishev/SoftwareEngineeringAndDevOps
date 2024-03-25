@@ -11,7 +11,8 @@ studentsController.setup(app, students);
 
 let port = process.argv[2];
 if (!port) port = process.env["PORT"];
-if (!port) port = 8080;
+// Default: 8080, change to 3030 in order to work with Jenkins, and to be able to create proper image for docker
+if (!port) port = 3030;
 
 app
   .listen(port, () => {

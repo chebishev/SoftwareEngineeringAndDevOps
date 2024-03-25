@@ -3,23 +3,94 @@
 # Jenkins (by default it works on port 8080)
 # Ngrok (to expose the port 8080 in the internet)
 # Github repo with the project
-# Webhook from the repo (for payload you will need ngrok, but by default you can use localhost:8080)
+# Webhook from the repo (for payload you will need ngrok)
+# 1. Install Jenkins
+# - the docker image seems to be the easiest way, but i can't get it to work with npm
+docker pull jenkins/jenkins
+docker run -d -v jenkins_home:/var/jenkins_home -p 8080:8080 -p 50000:50000 --restart=on-failure jenkins/jenkins:lts-jdk17
+# so windows installation it is. It needs Jdk 21
+# steps for the installation are provided in the resources
 
-# install dependencies and run the project
+-------------------------------------
+# install dependencies and run the project (just for test)
 npm install
+
 npm start
 # error will occur, because Jenkins is already running on port 8080
 # you can change it in index.js file just for run and test (to see if everything is working)
-# if you see docker files port 3030 must be exposed
+# if you look at the docker files, port 3030 must be exposed
+npm test
+
+----------------------------------------
+# add the project to github repo
+# create new jenkins job
+
+# start ngrok
+# it needs an account so you have to sign up
+
+# for Windows
+choco install ngrok
+# you have to get your authtoken from https://dashboard.ngrok.com/get-started/setup/windows
+ngrok config add-authtoken placeholder_for_the_token
+ngrok http 8080
+
+# for Docker
+# get your token from https://dashboard.ngrok.com/get-started/setup/docker
+docker run --net=host -it -e NGROK_AUTHTOKEN=placeholder_for_the_token ngrok/ngrok:latest http 8080
+
+# you will see something like this: 
+#Forwarding                    https://659a-194-141-37-161.ngrok-free.app -> http://localhost:8080
+# copy the url, check if it opens your jenkins server and add it as a webhook: 
+# https://659a-194-141-37-161.ngrok-free.app/github-webhook
+
+
+# create new jenkins job - freestyle project
+# this tree will appear:
+# Configure - Heading
+# General - you can leave it empty
+# Source Code Management - paste your github repo url under the "Repository URL", default branch is master - change it to "main"
+# Build Triggers - make sure that you check "GitHub hook trigger for GITScm polling"
+# Build Environment - you can leave it empty
+# Build Steps 
+# - Add build step -> Execute Windows batch command. Type in:
+npm install && npm audit && npm run test
+# Post-build Actions - leave it empty
 
 # for building image and uploading it to dockerhub
-# we will use chebushev/jenkins-test:alpha for testing purposes
-docker build -t chebishev/jenkins-test:alpha .
-echo "$DOCKER_PASSWORD" | docker login --username chebishev --password "Your Generated Key from DockerHub"
-docker push chebishev/jenkins-test:alpha
+# move Dockerfile and docker-compose.yml inside the project
+# we will use chebishev/jenkins-test:%BUILD_NUMBER% for testing purposes
+# (BUILD_NUMBER is an environment variable which is set by Jenkins and it is autoincremented)
+# Again in Build steps:
+# - Add build step -> Execute Windows batch command. Type in: 
+docker build -t chebishev/jenkins-test:%BUILD_NUMBER% .
+docker login -u chebishev --password Your_Generated_Key_from_DockerHub
+# if you don't want to expose your username and password go to Manage Jenkins - Credentials - System. Add new domain - Docker Hub. Add username and password
+# after that in the configuration you must check Build Environment -> Use secret text(s) or file(s) -> Username and password (separated)
+# name the variables (for example user, pass) and chose from Specific credentials (it will be dropdown) the Docker Hub option
+# then you must use this:
+docker login -u %user% --password %pass%
+docker push chebishev/jenkins-test:%BUILD_NUMBER%
+# you can push "latest" version for easier download as well
+# first change the tag on the current build:
+docker tag chebishev/jenkins-test:%BUILD_NUMBER% chebishev/jenkins-test:latest
+# and push it to dockerhub
+docker push chebishev/jenkins-test:latest
 
-# for running the image
-docker pull chebishev/jenkins-test:alpha
-
-# do not forget to add the image to docker-compose
+# Add second job to Jenkins
+# add github repo, branch from master to main
+# Go to Build steps - Add build step -> Execute Windows batch command. Type in:
+docker pull chebishev/jenkins-test:%BUILD_NUMBER%
+# do not forget to add the image path to docker-compose.yml, because it is not automatically added there
 docker-compose -f docker-compose.yml up -d
+
+# after that you can add this job as a post build action to the previous job in order to start it automatically
+
+
+# Just for fun
+
+# deploy to render:
+# go to render settings, copy the hook and make e curl request to it:
+# in Build steps - Add build step -> Execute Windows batch command. Type in:
+curl "https://api.render.com/deploy/your-srv-id?key=CaxHvesgo9A"
+
+# for additional fun you can hide the api too in jenkins variables
