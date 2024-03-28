@@ -94,3 +94,15 @@ docker-compose -f docker-compose.yml up -d
 curl "https://api.render.com/deploy/your-srv-id?key=CaxHvesgo9A"
 
 # for additional fun you can hide the api too in jenkins variables
+-------
+# for the last task you need to create a new item in Jenkins.
+# The type is Pipeline -> Pipeline -> pipeline script from SCM
+# add the repo
+# don't forget to change the branch to main
+
+# if the webhook is still running don't touch it.
+# in any other case start ngrok again and change the address in github
+
+# create Jenkinsfile in the root of the project and push it to github
+# the build must start automatically
+# if not, just build it manually and see if all in the pipeline is green
