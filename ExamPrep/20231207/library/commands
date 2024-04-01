@@ -1,0 +1,6 @@
+npm install
+npm audit fix
+npm run test:unit
+# npm run test:ui wants playwright
+npx playwright install
+# npm run test:ui needs test fixed
