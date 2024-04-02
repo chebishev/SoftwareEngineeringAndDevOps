@@ -1,0 +1,25 @@
+npm install
+npm audit fix
+npm run test:unit
+npx playwright install
+npm run test:ui
+
+# after that change "h2" to "h1" in "about.test.js"
+# it fixes two of the tests
+
+# in the footer.test.js one of the "e" letters isn't in english (maybe cyrilic)
+# 3 of 6 fixed
+
+# in the header.test.js "Home" is the first link and not "Movie Collection"
+# 4 of 6 fixed
+
+# replace "Welcome" with "Movies Collection" on home.test.js
+# 5 of 6 fixed
+
+# fix the link in movies.test.js to "http://localhost:8080/movies"
+# 6 of 6 fixed
+
+# next steps are:
+# create ci with "npm install" and "npm run test:unit"
+# create cd with deploy to render (get api key and service_id from render.com)
+# create another job to run the ui test, but before that fix the link
