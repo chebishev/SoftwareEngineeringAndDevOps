@@ -1,0 +1,56 @@
+name: Grades App CI/CD
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build_and_test_unit:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Use Node.js 20.x
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20.x
+        cache: 'npm'
+    - name: Install dependencies
+      run: npm install
+    - name: Run unit test
+      run: npm run test:unit
+    - name: Show SoftUni username
+      run: echo $GITHUB_ACTOR
+
+  test_ui:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Use Node.js 20.x
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20.x
+        cache: 'npm'
+    - name: Install dependencies
+      run: npm install
+    - name: Install playwright
+      run: npx playwright install
+    - name: Run server
+      run: npm start &
+    - name: Run UI tests
+      run: npm run test:ui
+
+  deploy_to_render:
+    runs-on: ubuntu-latest
+    steps:
+        - uses: actions/checkout@v3
+        - uses: JorgeLNJunior/render-deploy@v1.4.4
+          with:
+            service_id: ${{ secrets.RENDER_SERVICE_ID }}
+            api_key: ${{ secrets.RENDER_API_KEY }}
+            wait_deploy: true
